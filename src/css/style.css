@@ -1,0 +1,71 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+#lift-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+#floor,
+#lift {
+  border-radius: 5px;
+  width: 20%;
+  height: 40px;
+  padding: 5px;
+  margin: 0 0 16px 0;
+}
+
+label {
+  color: #666;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin: 0 0 8px 0;
+}
+
+button {
+  padding: 7px 20px;
+  border-radius: 8px;
+  border: none;
+}
+
+.simulatedContainer {
+  display: flex;
+  flex-direction: column;
+  margin: 1em auto 0 auto;
+  width: 80vw;
+}
+
+.floorContainer {
+  display: flex;
+  height: 7rem;
+  border-bottom: 3px solid #f15240;
+}
+
+#btnContainer {
+  display: flex;
+  gap: 0.5em;
+  flex-direction: column;
+  border-right: 3px solid #f15240;
+  padding: 0 2em;
+}
+
+#btnContainer p{
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.liftContainer{
+  width: 4em;
+  height: 70%;
+  background-color: #35784b;
+  position: relative;
+  top: 1.4em;
+  left: 1.5em;
+  margin: 0 5px 0 0;
+}
