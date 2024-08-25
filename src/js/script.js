@@ -28,13 +28,7 @@ liftForm.addEventListener("submit", function (event) {
 
     for (let j = 0; j < numLifts; j++) {
       const liftContainer = document.createElement("div");
-      liftContainer.id = `liftContainer-${i}-${j}`; // Unique ID for each lift on each floor
-      liftContainer.className = "liftContainer"; // Use class for similar elements
-      // liftContainer.style.width = "20px";
-      // liftContainer.style.height = "20px";
-      // liftContainer.style.border = "1px solid black";
-      // liftContainer.style.display = "inline-block";
-      // liftContainer.style.margin = "5px";
+      liftContainer.className = "liftContainer";
       floorContainer.appendChild(liftContainer);
     }
 
