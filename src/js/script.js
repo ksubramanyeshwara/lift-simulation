@@ -25,13 +25,13 @@ liftForm.addEventListener("submit", function (event) {
     liftContainer.id = "liftContainer";
 
     floorContainer.appendChild(btnContainer);
-
-    for (let j = 0; j < numLifts; j++) {
-      const liftContainer = document.createElement("div");
-      liftContainer.className = "liftContainer";
-      floorContainer.appendChild(liftContainer);
+    if (i === 1) {
+      for (let j = 0; j < numLifts; j++) {
+        const liftContainer = document.createElement("div");
+        liftContainer.className = "liftContainer";
+        floorContainer.appendChild(liftContainer);
+      }
     }
-
     building.appendChild(floorContainer);
   }
 });
