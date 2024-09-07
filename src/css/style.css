@@ -4,12 +4,36 @@
   padding: 0;
 }
 
+body {
+  background-color: #2b2b2b;
+}
+
+h1 {
+  text-align: center;
+  position: relative;
+  top: 5em;
+  color: #fff;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 #lift-form {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
+}
+
+label {
+  color: #e9e9e9;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin: 0 0 8px 0;
+}
+
+input {
+  background-color: #e9e9e9;
 }
 
 #floor,
@@ -21,30 +45,19 @@
   margin: 0 0 16px 0;
 }
 
-label {
-  color: #666;
-  font-size: 20px;
-  font-weight: bold;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  margin: 0 0 8px 0;
-}
-
-button {
+#submit {
   padding: 7px 20px;
   border-radius: 8px;
+  font-size: 1em;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 600;
   border: none;
-}
-
-.simulatedContainer {
-  display: flex;
-  flex-direction: column;
-  margin: 1em auto 0 auto;
-  width: 80vw;
+  cursor: pointer;
 }
 
 .floorContainer {
   display: flex;
-  height: 7rem;
+  height: 12rem;
   border-bottom: 3px solid #f15240;
 }
 
@@ -53,19 +66,91 @@ button {
   gap: 0.5em;
   flex-direction: column;
   border-right: 3px solid #f15240;
-  padding: 0 2em;
+  padding: 1em 1em 0 1em;
 }
 
-#btnContainer p{
+.floorInput,
+.liftInput {
+  position: relative;
+  padding: 0.7em;
+  border-radius: 10px;
+  display: block;
+  width: 10vw;
+}
+
+.up,
+.down {
+  width: 10vw;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 1em;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
 }
 
-.liftContainer{
-  width: 4em;
+.floorContainer p {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  position: absolute;
+  right: 0;
+  color: #fff;
+  padding: 1em 1em 0 0;
+}
+
+.liftContainer {
+  width: 7em;
   height: 70%;
   background-color: #35784b;
   position: relative;
-  top: 1.4em;
+  top: 2em;
   left: 1.5em;
   margin: 0 5px 0 0;
+  border: 5px solid #61412d;
+  /* 3D */
+  perspective: 1000px;
+}
+
+.door {
+  background-color: #61412d;
+  height: 100%;
+  width: 50%;
+  position: absolute;
+  transition: transform 0.5s ease-in-out;
+}
+
+#left-door {
+  top: 0;
+  left: 0;
+  border: 1px solid black;
+  /* transition */
+  transform-origin: left;
+  transition: transform 1s;
+}
+
+#right-door {
+  top: 0;
+  right: 0;
+  border: 1px solid black;
+  /* transition */
+  transform-origin: right;
+  transition: transform 2s;
+}
+
+/* Door swing effect */
+.liftContainer:hover #left-door {
+  transform: rotateY(-140deg);
+}
+
+.liftContainer:hover #right-door {
+  transform: rotateY(140deg);
+}
+
+#left-door,
+#right-door {
+  transition: transform 2.5s ease-in-out;
+}
+
+.translation {
+  animation: move 2s ease-in-out;
 }
