@@ -5,45 +5,35 @@ let liftSimulatorContainer = document.querySelector(
   "#lift-simulator-container"
 );
 
-let liftArr = [];
-let floorArr = [];
+let lifts = [];
 
-function createButton(direction) {
+function createButton(direction, floorNumber) {
   const button = document.createElement("button");
   button.type = "button";
   button.textContent = direction;
   button.className = direction.toLowerCase();
+  button.setAttribute("data-floor", floorNumber);
   return button;
-}
-
-function createInputForm() {
-  const form = document.createElement("form");
-  form.innerHTML = `
-    <input type="number" name="Floor" placeholder="Floor Number" class="floorInput" required />
-    <input type="number" name="Lift" placeholder="Lift Number" class="liftInput" required />
-  `;
-  return form;
 }
 
 function createButtonContainer(floorNumber, numFloors) {
   const btnContainer = document.createElement("div");
   btnContainer.id = "btnContainer";
-  btnContainer.appendChild(createInputForm());
 
   if (floorNumber < numFloors) {
-    btnContainer.appendChild(createButton("Up"));
+    btnContainer.appendChild(createButton("Up", floorNumber));
   }
   if (floorNumber > 1) {
-    btnContainer.appendChild(createButton("Down"));
+    btnContainer.appendChild(createButton("Down", floorNumber));
   }
 
   return btnContainer;
 }
 
-function createLift() {
+function createLift(id) {
   const lift = document.createElement("div");
   lift.className = "liftContainer";
-
+  lift.id = `lift-${id}`;
   lift.style.transition = "transform 2s ease-in-out";
 
   const leftDoor = document.createElement("div");
@@ -57,6 +47,17 @@ function createLift() {
   lift.appendChild(leftDoor);
   lift.appendChild(rightDoor);
 
+  // Create lift object
+  const liftObject = {
+    id: id,
+    element: lift,
+    currentFloor: 1,
+    isMoving: false,
+    direction: null,
+  };
+
+  lifts.push(liftObject);
+
   return lift;
 }
 
@@ -64,52 +65,66 @@ function createFloor(floorNumber, numFloors, numLifts) {
   const floorContainer = document.createElement("div");
   floorContainer.className = "floorContainer";
   floorContainer.innerHTML = `<p>Floor - ${floorNumber}</p>`;
-  floorArr.push(floorContainer);
-
   floorContainer.appendChild(createButtonContainer(floorNumber, numFloors));
 
   if (floorNumber === 1) {
     for (let j = 0; j < numLifts; j++) {
-      const lift = createLift();
+      const lift = createLift(j + 1);
       floorContainer.appendChild(lift);
-      liftArr.push(lift);
     }
   }
   return floorContainer;
 }
 
-function moveLift(liftArr, floorArr, liftInputValue, floorInputValue) {
-  let lift = liftArr[liftInputValue - 1];
-  let floor = floorArr[floorInputValue - 1];
+function moveLift(floorNumber) {
+  // Find the nearest available lift
+  const availableLift = findNearestAvailableLift(floorNumber);
 
-  const floorHeight = 12;
-  const translation = (floorInputValue - 1) * floorHeight;
-  translation.className = "translation";
+  if (availableLift) {
+    const lift = availableLift.element;
+    const floorHeight = 12;
+    const translation = (floorNumber - 1) * floorHeight;
 
-  // open doors
-  lift.querySelector("#left-door").style.transform = "translateX(-50%)";
-  lift.querySelector("#right-door").style.transform = "translateX(50%)";
+    availableLift.isMoving = true;
+    availableLift.direction =
+      floorNumber > availableLift.currentFloor ? "up" : "down";
 
-  setTimeout(() => {
-    // close doors
-    lift.querySelector("#left-door").style.transform = "translateX(0)";
-    lift.querySelector("#right-door").style.transform = "translateX(0)";
+    // open doors
+    lift.querySelector("#left-door").style.transform = "translateX(-50%)";
+    lift.querySelector("#right-door").style.transform = "translateX(50%)";
 
     setTimeout(() => {
-      // move the lift
-      lift.style.transform = `translateY(-${translation}rem)`;
-      setTimeout(() => {
-        lift.querySelector("#left-door").style.transform = "translateX(-50%)";
-        lift.querySelector("#right-door").style.transform = "translateX(50%)";
+      // close doors
+      lift.querySelector("#left-door").style.transform = "translateX(0)";
+      lift.querySelector("#right-door").style.transform = "translateX(0)";
 
-        // 5. Wait for 1 second, then close doors
+      setTimeout(() => {
+        // move the lift
+        lift.style.transform = `translateY(-${translation}rem)`;
         setTimeout(() => {
-          lift.querySelector("#left-door").style.transform = "translateX(0)";
-          lift.querySelector("#right-door").style.transform = "translateX(0)";
+          lift.querySelector("#left-door").style.transform = "translateX(-50%)";
+          lift.querySelector("#right-door").style.transform = "translateX(50%)";
+
+          // 5. Wait for 1 second, then close doors
+          setTimeout(() => {
+            lift.querySelector("#left-door").style.transform = "translateX(0)";
+            lift.querySelector("#right-door").style.transform = "translateX(0)";
+          }, 2500);
         }, 2500);
-      }, 2500);
-    }, 2500); // Close doors after 2.5 seconds
-  }, 2500);
+      }, 2500); // Close doors after 2.5 seconds
+    }, 2500);
+  }
+}
+
+function findNearestAvailableLift(floorNumber) {
+  return lifts.reduce((nearest, lift) => {
+    if (lift.isMoving) return nearest;
+    const distance = Math.abs(lift.currentFloor - floorNumber);
+    if (!nearest || distance < Math.abs(nearest.currentFloor - floorNumber)) {
+      return lift;
+    }
+    return nearest;
+  }, null);
 }
 
 function handleButtonClick(event) {
@@ -117,30 +132,17 @@ function handleButtonClick(event) {
     event.target.classList.contains("up") ||
     event.target.classList.contains("down")
   ) {
-    const btnContainer = event.target.closest("#btnContainer");
-    const liftInput = btnContainer.querySelector(".liftInput");
-    const floorInput = btnContainer.querySelector(".floorInput");
-
-    const liftInputValue = parseInt(liftInput.value);
-    const floorInputValue = parseInt(floorInput.value);
-
-    // Check if both inputs have values
-    if (!floorInputValue || !liftInputValue) {
-      alert("Please enter values for both Floor and Lift.");
-      return; // Stop further execution
-    }
-    moveLift(liftArr, floorArr, liftInputValue, floorInputValue);
-    console.log(`Floor: ${floorInputValue}, Lift: ${liftInputValue}`);
-
-    // Clear the input fields
-    floorInput.value = "";
-    liftInput.value = "";
+    const floorNumber = parseInt(event.target.getAttribute("data-floor"));
+    moveLift(floorNumber);
+    console.log(`Floor: ${floorNumber}`);
   }
 }
 
 function initializeLiftSimulator() {
-  for (let i = numFloors; i > 0; i--) {
-    liftSimulatorContainer.appendChild(createFloor(i, numFloors, numLifts));
+  for (let floorNumber = numFloors; floorNumber > 0; floorNumber--) {
+    liftSimulatorContainer.appendChild(
+      createFloor(floorNumber, numFloors, numLifts)
+    );
   }
   document.addEventListener("click", handleButtonClick);
 }
