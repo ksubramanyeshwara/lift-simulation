@@ -1,5 +1,5 @@
-const numFloors = parseInt(localStorage.getItem("numFloors"));
-const numLifts = parseInt(localStorage.getItem("numLifts"));
+const numFloors = Number.parseInt(localStorage.getItem("numFloors"));
+const numLifts = Number.parseInt(localStorage.getItem("numLifts"));
 
 let liftSimulatorContainer = document.querySelector(
   "#lift-simulator-container"
@@ -76,7 +76,17 @@ function createFloor(floorNumber, numFloors, numLifts) {
   return floorContainer;
 }
 
-function moveLift(floorNumber) {
+function openDoors(lift) {
+  lift.querySelector("#left-door").style.transform = "translateX(-50%)";
+  lift.querySelector("#right-door").style.transform = "translateX(50%)";
+}
+
+function closeDoors(lift) {
+  lift.querySelector("#left-door").style.transform = "translateX(0)";
+  lift.querySelector("#right-door").style.transform = "translateX(0)";
+}
+
+function moveLift(floorNumber, button) {
   // Find the nearest available lift
   const availableLift = findNearestAvailableLift(floorNumber);
 
@@ -89,42 +99,49 @@ function moveLift(floorNumber) {
     availableLift.direction =
       floorNumber > availableLift.currentFloor ? "up" : "down";
 
+    // Disable the clicked button
+    button.disabled = true;
+
     // open doors
-    lift.querySelector("#left-door").style.transform = "translateX(-50%)";
-    lift.querySelector("#right-door").style.transform = "translateX(50%)";
+    openDoors(lift);
 
     setTimeout(() => {
       // close doors
-      lift.querySelector("#left-door").style.transform = "translateX(0)";
-      lift.querySelector("#right-door").style.transform = "translateX(0)";
+      closeDoors(lift);
 
       setTimeout(() => {
         // move the lift
         lift.style.transform = `translateY(-${translation}rem)`;
         setTimeout(() => {
-          lift.querySelector("#left-door").style.transform = "translateX(-50%)";
-          lift.querySelector("#right-door").style.transform = "translateX(50%)";
-
-          // 5. Wait for 1 second, then close doors
+          openDoors(lift);
           setTimeout(() => {
-            lift.querySelector("#left-door").style.transform = "translateX(0)";
-            lift.querySelector("#right-door").style.transform = "translateX(0)";
+            closeDoors(lift);
+            // Reset the lift state after the doors close
+            availableLift.isMoving = false;
+            availableLift.currentFloor = floorNumber;
+            // Enable the clicked button
+            button.disabled = false;
           }, 2500);
         }, 2500);
-      }, 2500); // Close doors after 2.5 seconds
+      }, 2500);
     }, 2500);
   }
 }
 
 function findNearestAvailableLift(floorNumber) {
   return lifts.reduce((nearest, lift) => {
+    // If the lift is moving, skip it
     if (lift.isMoving) return nearest;
+
+    // Calculate the distance between the lift's current floor and the requested floor
     const distance = Math.abs(lift.currentFloor - floorNumber);
+
+    // If 'nearest' is null (first iteration) or the current lift is closer than the nearest lift found so far
     if (!nearest || distance < Math.abs(nearest.currentFloor - floorNumber)) {
-      return lift;
+      return lift; // Update 'nearest' to the current lift
     }
-    return nearest;
-  }, null);
+    return nearest; // Keep the current nearest lift
+  }, null); // Initial value of 'nearest' is null
 }
 
 function handleButtonClick(event) {
@@ -133,8 +150,7 @@ function handleButtonClick(event) {
     event.target.classList.contains("down")
   ) {
     const floorNumber = parseInt(event.target.getAttribute("data-floor"));
-    moveLift(floorNumber);
-    console.log(`Floor: ${floorNumber}`);
+    moveLift(floorNumber, event.target);
   }
 }
 
