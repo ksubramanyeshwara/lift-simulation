@@ -108,15 +108,16 @@ input {
   margin: 0 5px 0 0;
   border: 5px solid #61412d;
   /* 3D */
-  perspective: 1000px;
+  overflow: hidden;
 }
 
 .door {
   background-color: #61412d;
   height: 100%;
   width: 50%;
+  top: 0;
   position: absolute;
-  transition: transform 0.5s ease-in-out;
+  transition: transform 2s ease-in-out;
 }
 
 #left-door {
@@ -137,13 +138,12 @@ input {
   transition: transform 2s;
 }
 
-/* Door swing effect */
-.liftContainer:hover #left-door {
-  transform: rotateY(-140deg);
+#left-door {
+  left: 0;
 }
 
-.liftContainer:hover #right-door {
-  transform: rotateY(140deg);
+#right-door {
+  right: 0;
 }
 
 #left-door,

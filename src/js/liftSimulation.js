@@ -77,8 +77,8 @@ function createFloor(floorNumber, numFloors, numLifts) {
 }
 
 function openDoors(lift) {
-  lift.querySelector("#left-door").style.transform = "translateX(-50%)";
-  lift.querySelector("#right-door").style.transform = "translateX(50%)";
+  lift.querySelector("#left-door").style.transform = "translateX(-100%)";
+  lift.querySelector("#right-door").style.transform = "translateX(100%)";
 }
 
 function closeDoors(lift) {
@@ -102,29 +102,37 @@ function moveLift(floorNumber, button) {
     // Disable the clicked button
     button.disabled = true;
 
-    // open doors
-    openDoors(lift);
+    // Lift move duration
+    const liftMoveDuration =
+      2 * Math.abs(floorNumber - availableLift.currentFloor);
+
+    // Set the transition duration for the lift movement
+    lift.style.transition = `transform ${liftMoveDuration}s ease-in-out`;
+
+    // Move the lift
+    lift.style.transform = `translateY(-${translation}rem)`;
 
     setTimeout(() => {
-      // close doors
-      closeDoors(lift);
+      // Update lift's current floor
+      availableLift.currentFloor = floorNumber;
 
-      setTimeout(() => {
-        // move the lift
-        lift.style.transform = `translateY(-${translation}rem)`;
+      // Open doors only if the lift is on the same floor as the button clicked
+      if (availableLift.currentFloor === floorNumber) {
+        openDoors(lift);
         setTimeout(() => {
-          openDoors(lift);
-          setTimeout(() => {
-            closeDoors(lift);
-            // Reset the lift state after the doors close
-            availableLift.isMoving = false;
-            availableLift.currentFloor = floorNumber;
-            // Enable the clicked button
-            button.disabled = false;
-          }, 2500);
+          closeDoors(lift);
+          // Reset the lift state after the doors close
+          availableLift.isMoving = false;
+          // Enable the clicked button
+          button.disabled = false;
         }, 2500);
-      }, 2500);
-    }, 2500);
+      } else {
+        // Reset the lift state if the lift is not on the same floor
+        availableLift.isMoving = false;
+        // Enable the clicked button
+        button.disabled = false;
+      }
+    }, liftMoveDuration * 1000);
   }
 }
 
