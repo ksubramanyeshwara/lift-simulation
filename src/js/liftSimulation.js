@@ -93,7 +93,7 @@ function moveLift(floorNumber, button) {
 
   if (availableLift) {
     const lift = availableLift.element;
-    const floorHeight = 12;
+    const floorHeight = 10;
     const translation = (floorNumber - 1) * floorHeight;
 
     availableLift.isMoving = true;
