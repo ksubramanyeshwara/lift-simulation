@@ -1,11 +1,12 @@
-const numFloors = Number.parseInt(localStorage.getItem("numFloors"));
-const numLifts = Number.parseInt(localStorage.getItem("numLifts"));
+const numFloors = parseInt(localStorage.getItem("numFloors"));
+const numLifts = parseInt(localStorage.getItem("numLifts"));
 
 let liftSimulatorContainer = document.querySelector(
   "#lift-simulator-container"
 );
 
 let lifts = [];
+let liftQueue = []; // Queue to store lift requests
 
 function createButton(direction, floorNumber) {
   const button = document.createElement("button");
@@ -104,7 +105,7 @@ function moveLift(floorNumber, button) {
 
     // Lift move duration
     const liftMoveDuration =
-      2 * Math.abs(floorNumber - availableLift.currentFloor);
+      3 * Math.abs(floorNumber - availableLift.currentFloor);
 
     // Set the transition duration for the lift movement
     lift.style.transition = `transform ${liftMoveDuration}s ease-in-out`;
@@ -121,16 +122,22 @@ function moveLift(floorNumber, button) {
         openDoors(lift);
         setTimeout(() => {
           closeDoors(lift);
-          // Reset the lift state after the doors close
-          availableLift.isMoving = false;
-          // Enable the clicked button
-          button.disabled = false;
+          setTimeout(() => {
+            // Reset the lift state after the doors close
+            availableLift.isMoving = false;
+            // Enable the clicked button
+            button.disabled = false;
+            // Process the next request in the queue
+            processQueue();
+          }, 2500);
         }, 2500);
       } else {
         // Reset the lift state if the lift is not on the same floor
         availableLift.isMoving = false;
         // Enable the clicked button
         button.disabled = false;
+        // Process the next request in the queue
+        processQueue();
       }
     }, liftMoveDuration * 1000);
   }
@@ -158,11 +165,46 @@ function handleButtonClick(event) {
     event.target.classList.contains("down")
   ) {
     const floorNumber = parseInt(event.target.getAttribute("data-floor"));
-    moveLift(floorNumber, event.target);
+    const direction = event.target.classList.contains("up") ? "up" : "down";
+    // Disable the button immediately when clicked
+    event.target.disabled = true;
+    // Add the request to the queue
+    liftQueue.push({ floorNumber, direction, button: event.target });
+    // Process the queue
+    processQueue();
   }
 }
 
+function processQueue() {
+  if (liftQueue.length === 0) {
+    return;
+  }
+
+  liftQueue.forEach((request, index) => {
+    const { floorNumber, direction, button } = request;
+    const availableLift = findNearestAvailableLift(floorNumber);
+    if (availableLift) {
+      liftQueue.splice(index, 1); // Remove the request from the queue
+      moveLift(floorNumber, button);
+    }
+  });
+}
+
+function createBackButton() {
+  const backButton = document.createElement("button");
+  backButton.type = "button";
+  backButton.textContent = "Modify the Floor and Lift";
+  backButton.className = "backButton";
+  backButton.addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
+  return backButton;
+}
+
 function initializeLiftSimulator() {
+  const backButton = createBackButton();
+  liftSimulatorContainer.appendChild(backButton);
+
   for (let floorNumber = numFloors; floorNumber > 0; floorNumber--) {
     liftSimulatorContainer.appendChild(
       createFloor(floorNumber, numFloors, numLifts)
