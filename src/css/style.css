@@ -57,7 +57,7 @@ input {
 
 .floorContainer {
   display: flex;
-  height: 12rem;
+  height: 10rem;
   border-bottom: 3px solid #f15240;
 }
 
@@ -66,7 +66,7 @@ input {
   gap: 0.5em;
   flex-direction: column;
   border-right: 3px solid #f15240;
-  padding: 1em 1em 0 1em;
+  padding: 2em 1em 0 1em;
 }
 
 .floorInput,
@@ -100,10 +100,10 @@ input {
 
 .liftContainer {
   width: 7em;
-  height: 70%;
+  height: 80%;
   background-color: #35784b;
   position: relative;
-  top: 2em;
+  top: 1em;
   left: 1.5em;
   margin: 0 5px 0 0;
   border: 5px solid #61412d;
@@ -153,4 +153,22 @@ input {
 
 .translation {
   animation: move 2s ease-in-out;
+}
+
+.backButton {
+  display: block;
+  margin: 0 auto; /* Center the button horizontally */
+  width: 200px; /* Set the width */
+  height: 50px; /* Set the height */
+  background-color: #007bff; /* Background color */
+  color: white; /* Text color */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 16px; /* Font size */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.backButton:hover {
+  background-color: #0056b3; /* Darker background color on hover */
 }
