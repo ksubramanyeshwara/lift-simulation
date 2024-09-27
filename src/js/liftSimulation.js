@@ -105,10 +105,10 @@ function moveLift(floorNumber, button) {
 
     // Lift move duration
     const liftMoveDuration =
-      3 * Math.abs(floorNumber - availableLift.currentFloor);
+      Math.abs(floorNumber - availableLift.currentFloor) * 2000;
 
     // Set the transition duration for the lift movement
-    lift.style.transition = `transform ${liftMoveDuration}s ease-in-out`;
+    lift.style.transition = `transform ${liftMoveDuration}ms linear`;
 
     // Move the lift
     lift.style.transform = `translateY(-${translation}rem)`;
@@ -139,7 +139,7 @@ function moveLift(floorNumber, button) {
         // Process the next request in the queue
         processQueue();
       }
-    }, liftMoveDuration * 1000);
+    }, liftMoveDuration);
   }
 }
 
